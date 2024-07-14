@@ -1,38 +1,38 @@
-const STORAGE_KEY = 'feedback-form-state';
 const form = document.querySelector('.feedback-form');
-let dataForm = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-const { email, message } = form.elements;
+const keyStorage = 'feedback-form-state';
 
-form.addEventListener('input', handleFormInput);
-form.addEventListener('submit', handleFormSubmit);
-
-reloadPage();
-
-function handleFormInput(event) {
-  dataForm = { email: email.value.trim(), message: message.value.trim() };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(dataForm));
+function dataForm(form) {
+  const email = form.email.value.trim();
+  const message = form.message.value.trim();
+  return {
+    email,
+    message,
+  };
 }
 
-function reloadPage() {
-  if (dataForm) {
-    email.value = dataForm.email || '';
-    message.value = dataForm.message || '';
-  }
-}
-
-function handleFormSubmit(event) {
+form.addEventListener('input', event => {
   event.preventDefault();
 
-  const trimmedEmail = email.value.trim();
-  const trimmedMessage = message.value.trim();
+  const data = dataForm(event.currentTarget);
+  const jsonData = JSON.stringify(data);
+  localStorage.setItem(keyStorage, jsonData);
+});
 
-  if (trimmedEmail === '' || trimmedMessage === '') {
-    return alert('Please fill in all fields');
-  }
-
-  console.log({ email: trimmedEmail, message: trimmedMessage });
-
-  localStorage.removeItem(STORAGE_KEY);
-  event.currentTarget.reset();
-  dataForm = {};
+const localData = localStorage.getItem(keyStorage);
+if (localData) {
+  const data = JSON.parse(localData);
+  form.email.value = data.email;
+  form.message.value = data.message;
 }
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  if (form.email.value !== '' && form.message.value !== '') {
+    console.log({ email: form.email.value, message: form.message.value });
+
+    localStorage.removeItem(keyStorage);
+    form.reset();
+  } else {
+    alert('Please fill in all fields');
+  }
+});
