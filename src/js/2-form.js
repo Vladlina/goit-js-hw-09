@@ -22,11 +22,15 @@ function reloadPage() {
 
 function handleFormSubmit(event) {
   event.preventDefault();
-  console.log({ email: email.value, message: message.value });
 
-  if (email.value === '' || message.value === '') {
-    return alert('Fill please all fields');
+  const trimmedEmail = email.value.trim();
+  const trimmedMessage = message.value.trim();
+
+  if (trimmedEmail === '' || trimmedMessage === '') {
+    return alert('Please fill in all fields');
   }
+
+  console.log({ email: trimmedEmail, message: trimmedMessage });
 
   localStorage.removeItem(STORAGE_KEY);
   event.currentTarget.reset();
